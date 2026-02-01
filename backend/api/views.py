@@ -10,11 +10,17 @@ from .serializers import (
 from .services import DatasetService
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.http import JsonResponse
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
+
+def health_check(request):
+    """Health check endpoint for UptimeRobot to keep Render service awake."""
+    return JsonResponse({"status": "ok"})
 
 # Report generation imports
 from reportlab.lib.pagesizes import letter
