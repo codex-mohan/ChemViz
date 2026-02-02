@@ -34,6 +34,10 @@ export const authService = {
         const response = await api.post('register/', { username, password, email });
         return response.data;
     },
+    validateToken: async () => {
+        const response = await api.get('validate-token/');
+        return response.data;
+    },
 };
 
 export const datasetService = {

@@ -3,9 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     UploadCSVView,
     DatasetViewSet,
-    DatasetHistoryView, # Keep only if not fully merged into ViewSet, but logically History is just list? actually keep it for now or merge.
+    DatasetHistoryView,
     RegisterView,
     LoginView,
+    ValidateTokenView,
     home,
 )
 
@@ -18,4 +19,5 @@ urlpatterns = [
     path("history/", DatasetHistoryView.as_view(), name="history"),
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", LoginView.as_view(), name="login"),
+    path("validate-token/", ValidateTokenView.as_view(), name="validate-token"),
 ]

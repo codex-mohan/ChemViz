@@ -128,7 +128,7 @@ class ChartsView(QWidget):
         # Header
         header = QLabel("Data Visualization")
         header.setObjectName("heading")
-        header.setFont(QFont("Source Sans 3", 24, QFont.Bold))
+        header.setFont(QFont("Source Sans 3", 20, QFont.Bold))
         layout.addWidget(header)
         
         # Tab widget for different charts

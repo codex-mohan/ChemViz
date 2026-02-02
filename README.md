@@ -47,6 +47,7 @@ Whether you are on the web using the **Modern React Dashboard** or on the shop f
   - 📶 **Histograms**: Understand the statistical distribution of key parameters.
   - 🌡️ **Correlation Matrix**: A heatmap to identify hidden relationships between variables.
 - **Interactive Reports**: Generate and download comprehensive PDF reports directly from the web interface.
+- **History Management**: View past uploads and clear search history with a single click to maintain a clean workspace.
 - **Drag & Drop Upload**: Seamless CSV file upload with validation and progress tracking.
 
 ### 🖥️ Desktop Application (PyQt5)
@@ -169,6 +170,7 @@ python desktop/main.py
 | `GET` | `/api/datasets/{id}/` | Get detailed equipment data |
 | `GET` | `/api/datasets/{id}/report/` | **Generate & Download PDF Report** |
 | `GET` | `/api/history/` | View recent upload history |
+| `DELETE` | `/api/history/` | Clear full search history |
 
 ## ⚠️ Known Limitations
 

@@ -29,7 +29,7 @@ class DataTableView(QWidget):
         
         header = QLabel("Equipment Data")
         header.setObjectName("heading")
-        header.setFont(QFont("Source Sans 3", 24, QFont.Bold))
+        header.setFont(QFont("Source Sans 3", 20, QFont.Bold))
         header_row.addWidget(header)
         
         header_row.addStretch()

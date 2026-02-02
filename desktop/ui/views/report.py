@@ -37,8 +37,8 @@ class DetailBox(QFrame):
         super().__init__(parent)
         self.setStyleSheet("""
             QFrame {
-                background-color: #1A1A1A;
-                border: 1px solid #333333;
+                background-color: transparent;
+                border: none;
                 border-radius: 12px;
             }
         """)

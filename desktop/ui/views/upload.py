@@ -39,6 +39,7 @@ class DropZone(QFrame):
         super().__init__(parent)
         self.setAcceptDrops(True)
         self.setFixedSize(450, 180)
+        self.setObjectName("dropZone")
         self._setup_ui()
         self._set_normal_style()
     
@@ -73,7 +74,7 @@ class DropZone(QFrame):
     
     def _set_normal_style(self):
         self.setStyleSheet("""
-            QFrame {
+            QFrame#dropZone {
                 background-color: #1A1A1A;
                 border: 2px dashed #444444;
                 border-radius: 16px;
@@ -82,7 +83,7 @@ class DropZone(QFrame):
     
     def _set_hover_style(self):
         self.setStyleSheet("""
-            QFrame {
+            QFrame#dropZone {
                 background-color: #1F1F1F;
                 border: 2px dashed #00D9A5;
                 border-radius: 16px;

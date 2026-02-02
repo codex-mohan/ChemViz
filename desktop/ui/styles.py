@@ -148,7 +148,7 @@ QPushButton:disabled {
 
 QPushButton#primary {
     background-color: #00D9A5;
-    color: #0D0D0D;
+    color: #FFFFFF;
     border: none;
     font-weight: 600;
 }

@@ -23,7 +23,7 @@ class SidebarButton(QPushButton):
         self.setText(display_text)
         
         self.setMinimumHeight(48)
-        self.setFont(QFont("Source Sans 3", 12))
+        self.setFont(QFont("Source Sans 3", 10))
 
 
 class Sidebar(QFrame):

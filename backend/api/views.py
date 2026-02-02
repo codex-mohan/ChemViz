@@ -1,4 +1,5 @@
 import io
+import os
 import logging
 from .models import Dataset, Equipment, DatasetSummary
 from .serializers import (
@@ -85,9 +86,12 @@ class DatasetViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Read-only viewset for Datasets since creation is handled via UploadCSVView.
     """
-    queryset = Dataset.objects.all().order_by("-created_at")
+    # queryset = Dataset.objects.all().order_by("-created_at") # Removed to use get_queryset
     serializer_class = DatasetSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Dataset.objects.filter(uploaded_by=self.request.user).order_by("-created_at")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -364,7 +368,7 @@ class DatasetViewSet(viewsets.ReadOnlyModelViewSet):
 class DatasetHistoryView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        datasets = Dataset.objects.order_by("-created_at")[:5]
+        datasets = Dataset.objects.filter(uploaded_by=request.user).order_by("-created_at")[:5]
         serializer = DatasetListSerializer(datasets, many=True)
         return Response(serializer.data)
 
@@ -429,7 +433,7 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        
+
         from django.contrib.auth import authenticate
         user = authenticate(username=username, password=password)
 
@@ -446,3 +450,20 @@ class LoginView(APIView):
         return Response(
             {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
         )
+
+
+class ValidateTokenView(APIView):
+    """
+    Validates if the provided authentication token is still valid.
+    Used by frontend to verify stored tokens on app startup.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Returns user info if token is valid."""
+        user = request.user
+        return Response({
+            "valid": True,
+            "user_id": user.id,
+            "username": user.username,
+        })
