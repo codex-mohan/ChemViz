@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // import { motion } from 'framer-motion';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -12,6 +13,7 @@ import { datasetService } from '../services/api';
 import type { Dataset } from '../services/api';
 
 export const Dashboard = () => {
+    const navigate = useNavigate();
     const [dataset, setDataset] = useState<Dataset | null>(null);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
@@ -61,7 +63,7 @@ export const Dashboard = () => {
                 <FileText className="w-16 h-16 mb-4 opacity-50" />
                 <h2 className="text-xl font-semibold mb-2">No Data Available</h2>
                 <p>Upload a CSV file to view analytics.</p>
-                <Button className="mt-4" onClick={() => window.location.href = '/upload'}>
+                <Button className="mt-4" onClick={() => navigate('/upload')}>
                     Go to Upload
                 </Button>
             </div>
