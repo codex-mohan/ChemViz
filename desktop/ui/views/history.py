@@ -2,9 +2,9 @@
 History View - Display past uploaded datasets
 """
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QPushButton, QFrame,
-    QScrollArea
+    QScrollArea, QMessageBox
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QThread, QObject
 from PyQt5.QtGui import QFont
@@ -16,10 +16,25 @@ class HistoryLoadWorker(QObject):
     """Worker thread for loading history"""
     finished = pyqtSignal(list)
     error = pyqtSignal(str)
-    
+
     def run(self):
         try:
             result = api_client.get_history()
+            self.finished.emit(result)
+        except ApiError as e:
+            self.error.emit(e.message)
+        except Exception as e:
+            self.error.emit(str(e))
+
+
+class ClearHistoryWorker(QObject):
+    """Worker thread for clearing history"""
+    finished = pyqtSignal(dict)
+    error = pyqtSignal(str)
+
+    def run(self):
+        try:
+            result = api_client.clear_history()
             self.finished.emit(result)
         except ApiError as e:
             self.error.emit(e.message)
@@ -99,12 +114,30 @@ class HistoryView(QWidget):
         header_row.addWidget(header)
         
         header_row.addStretch()
-        
+
         # Refresh button
         refresh_btn = QPushButton("🔄  Refresh")
         refresh_btn.clicked.connect(self.load_history)
         header_row.addWidget(refresh_btn)
-        
+
+        # Clear History button
+        self.clear_btn = QPushButton("🗑️  Clear History")
+        self.clear_btn.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: #EF476F;
+                border: 1px solid #EF476F;
+                border-radius: 8px;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background-color: #EF476F;
+                color: #0D0D0D;
+            }
+        """)
+        self.clear_btn.clicked.connect(self._on_clear_history)
+        header_row.addWidget(self.clear_btn)
+
         layout.addLayout(header_row)
         
         subtitle = QLabel("Last 5 uploaded datasets are stored")
@@ -193,3 +226,58 @@ class HistoryView(QWidget):
     def _on_dataset_clicked(self, dataset_id: int):
         """Handle dataset selection"""
         self.dataset_selected.emit(dataset_id)
+
+    def _on_clear_history(self):
+        """Handle clear history button click"""
+        reply = QMessageBox.question(
+            self,
+            "Clear History",
+            "Are you sure you want to clear all history?\nThis action cannot be undone.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply != QMessageBox.Yes:
+            return
+
+        self.clear_btn.setEnabled(False)
+        self._clear_list()
+        self.loading_label.show()
+
+        # Create and start clear worker thread
+        self.clear_thread = QThread()
+        self.clear_worker = ClearHistoryWorker()
+        self.clear_worker.moveToThread(self.clear_thread)
+
+        self.clear_thread.started.connect(self.clear_worker.run)
+        self.clear_worker.finished.connect(self._on_clear_success)
+        self.clear_worker.error.connect(self._on_clear_error)
+        self.clear_worker.finished.connect(self.clear_thread.quit)
+        self.clear_worker.error.connect(self.clear_thread.quit)
+
+        self.clear_thread.start()
+
+    def _on_clear_success(self, result: dict):
+        """Handle successful history clear"""
+        self.loading_label.hide()
+        self.clear_btn.setEnabled(True)
+        self._clear_list()
+        self.no_data_alert.show()
+
+        # Show success message
+        success_alert = AlertCard(
+            result.get('message', 'History cleared successfully.'),
+            "success"
+        )
+        self.list_layout.insertWidget(0, success_alert)
+
+    def _on_clear_error(self, error_msg: str):
+        """Handle history clear error"""
+        self.loading_label.hide()
+        self.clear_btn.setEnabled(True)
+
+        error_alert = AlertCard(f"Failed to clear history: {error_msg}", "error")
+        self.list_layout.insertWidget(0, error_alert)
+
+        # Reload history to restore the list
+        self.load_history()

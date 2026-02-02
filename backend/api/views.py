@@ -368,6 +368,34 @@ class DatasetHistoryView(APIView):
         serializer = DatasetListSerializer(datasets, many=True)
         return Response(serializer.data)
 
+    def delete(self, request):
+        """Clear all dataset history for the authenticated user."""
+        try:
+            # Get all datasets for this user
+            datasets = Dataset.objects.filter(uploaded_by=request.user)
+            count = datasets.count()
+
+            # Delete associated files and records
+            for dataset in datasets:
+                if dataset.file_path and os.path.exists(dataset.file_path):
+                    try:
+                        os.remove(dataset.file_path)
+                    except OSError:
+                        pass  # Log this in production
+                dataset.delete()
+
+            logger.info(f"User {request.user.username} cleared {count} datasets from history")
+            return Response(
+                {"message": f"Successfully cleared {count} datasets from history."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            logger.error(f"Error clearing history: {e}")
+            return Response(
+                {"error": "Failed to clear history. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):

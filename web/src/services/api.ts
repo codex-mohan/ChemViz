@@ -79,5 +79,10 @@ export const datasetService = {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
+    },
+
+    clearHistory: async () => {
+        const response = await api.delete('history/');
+        return response.data;
     }
 };

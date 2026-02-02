@@ -113,7 +113,12 @@ class ApiClient:
         """Get last 5 uploaded datasets"""
         response = self.session.get(self._url("history/"), headers=self._get_headers())
         return self._handle_response(response)
-    
+
+    def clear_history(self) -> Dict[str, Any]:
+        """Clear all dataset history"""
+        response = self.session.delete(self._url("history/"), headers=self._get_headers())
+        return self._handle_response(response)
+
     def download_report(self, dataset_id: int) -> bytes:
         """Download PDF report for dataset"""
         response = self.session.get(self._url(f"datasets/{dataset_id}/report/"), headers=self._get_headers())

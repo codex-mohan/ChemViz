@@ -170,6 +170,37 @@ python desktop/main.py
 | `GET` | `/api/datasets/{id}/report/` | **Generate & Download PDF Report** |
 | `GET` | `/api/history/` | View recent upload history |
 
+## ⚠️ Known Limitations
+
+### CSV Format Requirements
+
+This application is designed specifically for **Chemical Equipment data** and requires CSV files to follow a strict schema. The following columns are **mandatory**:
+
+| Column Name | Data Type | Description |
+| :--- | :--- | :--- |
+| `Equipment Name` | String | Name/identifier of the equipment |
+| `Type` | String | Category/type of equipment (e.g., Pump, Valve, Compressor) |
+| `Flowrate` | Numeric | Flow rate value |
+| `Pressure` | Numeric | Pressure measurement |
+| `Temperature` | Numeric | Temperature value |
+
+**Important Notes:**
+- CSV files with different column names or structures will be rejected during upload
+- The application does not support dynamic column mapping or generic CSV visualization
+- All three numeric columns (`Flowrate`, `Pressure`, `Temperature`) must contain valid numeric values
+- Column headers are case-sensitive and must match exactly as shown above
+
+### Sample Data Format
+
+```csv
+Equipment Name,Type,Flowrate,Pressure,Temperature
+Pump-1,Pump,120,5.2,110
+Compressor-1,Compressor,95,8.4,95
+Valve-1,Valve,60,4.1,105
+```
+
+A sample CSV file is provided at [`data/sample_equipment_data.csv`](data/sample_equipment_data.csv) for reference.
+
 ## 👤 Contact
 
 **Mohana Krishna**  

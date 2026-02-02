@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Download, Calendar, HardDrive } from 'lucide-react';
+import { FileText, Download, Calendar, HardDrive, Trash2 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { datasetService, type Dataset } from '../services/api';
@@ -9,6 +9,7 @@ export const History = () => {
     const navigate = useNavigate();
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [loading, setLoading] = useState(true);
+    const [clearing, setClearing] = useState(false);
 
     useEffect(() => {
         const loadHistory = async () => {
@@ -30,12 +31,41 @@ export const History = () => {
         });
     };
 
+    const handleClearHistory = async () => {
+        if (!confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+            return;
+        }
+
+        setClearing(true);
+        try {
+            await datasetService.clearHistory();
+            setDatasets([]);
+        } catch (err) {
+            console.error("Failed to clear history:", err);
+            alert('Failed to clear history. Please try again.');
+        } finally {
+            setClearing(false);
+        }
+    };
+
     if (loading) return <div className="p-8 text-center text-text-muted">Loading history...</div>;
 
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-heading font-bold text-white">Upload History</h2>
+                {datasets.length > 0 && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        leftIcon={<Trash2 size={16} />}
+                        onClick={handleClearHistory}
+                        disabled={clearing}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    >
+                        {clearing ? 'Clearing...' : 'Clear History'}
+                    </Button>
+                )}
             </div>
 
             <div className="grid gap-4">
