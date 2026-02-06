@@ -92,6 +92,9 @@ chemical-equipment-visualizer/
 └── README.md                # 📄 Documentation (You are here!)
 ```
 
+> [!NOTE]
+> **Architectural Decision**: While this project could benefit from a Monorepo structure (e.g., using **Turborepo**) for better dependency management and build orchestration, it is intentionally organized into three distinct directories. This design choice adheres to strict internship screening guidelines regarding library usage and project simplicity.
+
 ## 🏁 Getting Started
 
 Follow these steps to set up the environment locally.
